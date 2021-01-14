@@ -18,10 +18,10 @@ async function validateUserId(req, res, next) {
       req.user = user
       next()
     } else {
-      res.status(404).json(`User with id ${req.params.id} not found.`)
+      res.status(404).json({ message: `User with id ${req.params.id} not found.` })
     }
   } catch (error) {
-    res.status(500).json('Error getting user by id.')
+    res.status(500).json({ error: 'Error getting user by id.' })
   }
 }
 
@@ -29,18 +29,38 @@ function validateUser(req, res, next) {
   // do your magic!
   console.log('checking user request body')
   if (!req.body.name) {
-    res.status(400).json({ error: "name required field" })
+    res.status(400).json({ message: "name required field" })
   } else {
     next()
   }
 }
 
-function validatePostId(req, res, next) {
+async function validatePostId(req, res, next) {
   // do your magic!
+  console.log('checking post id')
+  try {
+    const post = await Posts.getById(req.params.id)
+    if (post) {
+      req.user = post
+      next()
+    } else {
+      res.status(404).json({ message: `Post with id ${req.params.id} not found.` })
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Error getting post by id.' })
+  }
 }
 
 function validatePost(req, res, next) {
   // do your magic!
+  console.log('checking post request body')
+  if (!req.body) {
+    res.status(400).json({ message: "missing post data" })
+  } else if (!req.body.text) {
+    res.status(400).json({ message: "text required field" })
+  } else {
+    next()
+  }
 }
 
 // do not forget to expose these functions to other modules
