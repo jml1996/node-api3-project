@@ -8,8 +8,6 @@ const server = express()
 
 server.use(express.json())
 
-// global middlewares and routes need to be connected here
-
 server.use('/api/posts', logger, postsRouter)
 server.use('/api/users', logger, usersRouter)
 

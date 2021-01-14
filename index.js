@@ -1,4 +1,3 @@
-// require your server and start it
 const server = require('./api/server.js')
 
 server.listen(4000, () => {
