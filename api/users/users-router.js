@@ -7,10 +7,20 @@ const router = express.Router();
 const Users = require('./users-model')
 const Posts = require('../posts/posts-model')
 
-router.post('/', (req, res) => {
+router.post('/', validateUser, (req, res) => {
   // do your magic!
   // this needs a middleware to check that the request body is valid
-});
+  Users.insert(req.body)
+    .then(user => {
+      res.status(201).json(user)
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(500).json({
+        message: 'Error posting new users',
+      })
+    })
+})
 
 router.get('/', (req, res) => {
   // do your magic!
@@ -19,12 +29,12 @@ router.get('/', (req, res) => {
       res.status(200).json(users)
     })
     .catch(error => {
-      console.log(error);
+      console.log(error)
       res.status(500).json({
         message: 'Error getting all users',
-      });
+      })
     })
-});
+})
 
 router.get('/:id', validateUserId, (req, res) => {
   // do your magic!
@@ -40,7 +50,7 @@ router.get('/:id', validateUserId, (req, res) => {
   //       message: 'Error getting user.'
   //     })
   //   })
-});
+})
 
 router.delete('/:id', validateUserId, (req, res) => {
   // do your magic!
@@ -55,7 +65,7 @@ router.delete('/:id', validateUserId, (req, res) => {
         message: "Error deleting user"
       })
     })
-});
+})
 
 router.put('/:id', validateUserId, validateUser, (req, res) => {
   // do your magic!
@@ -71,9 +81,10 @@ router.put('/:id', validateUserId, validateUser, (req, res) => {
         message: "User update failed"
       })
     })
-});
+})
 
 // What exactly is being posted here?
+// ***********************
 router.post('/:id/posts', validateUserId, validateUser, (req, res) => {
   // do your magic!
   // this needs a middleware to verify user id
@@ -89,7 +100,7 @@ router.post('/:id/posts', validateUserId, validateUser, (req, res) => {
         message: "Error adding new post for the given user"
       })
     })
-});
+})
 
 router.get('/:id/posts', validateUserId, (req, res) => {
   // do your magic!
@@ -104,7 +115,7 @@ router.get('/:id/posts', validateUserId, (req, res) => {
         message: "Error getting user posts"
       })
     })
-});
+})
 
 // do not forget to export the router
 module.exports = router
