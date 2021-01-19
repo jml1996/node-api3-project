@@ -1,24 +1,52 @@
-const express = require('express');
+const express = require('express')
 
-const router = express.Router();
+const { validatePostId } = require('../middleware/middleware')
+
+const router = express.Router()
+
+const Posts = require('./posts-model')
 
 router.get('/', (req, res) => {
-  // do your magic!
-});
+  Posts.get()
+    .then(posts => {
+      res.status(200).json(posts)
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(500).json({
+        message: 'Error getting all posts',
+      })
+    })
+})
 
-router.get('/:id', (req, res) => {
-  // do your magic!
-  // this needs a middleware to verify post id
-});
+router.get('/:id', validatePostId, (req, res) => {
+  res.status(200).json(req.post)
+})
 
-router.delete('/:id', (req, res) => {
-  // do your magic!
-  // this needs a middleware to verify post id
-});
+router.delete('/:id', validatePostId, (req, res) => {
+  Posts.remove(req.params.id)
+    .then(() => {
+      res.status(200).json({ message: `post with id ${req.params.id} deleted`})
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(500).json({
+        message: 'Error deleting post',
+      })
+    })
+})
 
-router.put('/:id', (req, res) => {
-  // do your magic!
-  // this needs a middleware to verify post id
-});
+router.put('/:id', validatePostId, (req, res) => {
+  Posts.update(req.params.id, req.body)
+    .then(() => {
+      res.status(200).json({ message: `Post with id ${req.params.id} updated` })
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(500).json({
+        message: 'Post update failed'
+      })
+    })
+})
 
-// do not forget to export the router
+module.exports = router
